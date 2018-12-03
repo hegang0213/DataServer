@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <!--
+    <meta charset="UTF-8">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="renderer" content="webkit"/>
+    <meta name="force-rendering" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">-->
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.css')}}" />
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap-theme.css')}}" />
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap-table.css')}}" />
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/bootstrap.js"></script>
+    <script src="/static/js/bootstrap-table.js"></script>
+    <script src="/static/js/bootstrap-table-zh-CN.js"></script>
+    <script type="application/javascript">
+        var Table = function() {
+            var oTable = new Object();
+            oTable.element = $("#table_ui");
+            oTable.init = function() {
+                var url = '/api/report/0/{{date}}';
+                oTable.element.bootstrapTable({
+                    url: url,
+                    striped: true,
+                    contentType: 'application/json;charset=utf-8',
+                    dataField: 'details',
+                    columns: [
+                        [
+                            {field: 'WellNum', title: '名称', rowspan: 2, align: 'center'},
+                            {field: 'FirstStartTime', title: '开', rowspan: 2, align: 'center'},
+                            {field: 'FirstStopTime', title: '停', rowspan: 2, align: 'center'},
+                            {field: 'SecondStartTime', title: '开', rowspan: 2, align: 'center'},
+                            {field: 'SecondStopTime', title: '停', rowspan: 2, align: 'center'},
+                            {field: 'ThirdStartTime', title: '开', rowspan: 2, align: 'center'},
+                            {field: 'ThirdStopTime', title: '停', rowspan: 2, align: 'center'},
+                            {field: 'TotalTime', title: '合计</br>时间', rowspan: 2, align: 'center'},
+                            {title: '昨日</br>水字', align: 'center'},
+                            {title: '今日</br>水字', align: 'center'},
+                            {title: '日产水</br>m<sup>3</sup>', align: 'center'},
+                            {title: '水位', align: 'center', valign: 'middle'},
+                            {title: '水压', align: 'center', valign: 'middle'},
+                            {title: '-', align: 'center', valign: 'middle'},
+                            {title: '昨日</br>电字', align: 'center'},
+                            {title: '今日</br>电字', align: 'center'},
+                            {field: 'Rate', title: '倍</br>率', rowspan:2, align: 'center', valign: 'middle'},
+                            {title: '日耗电', align: 'center', valign: 'middle'},
+                            {title: '', align: 'center'},
+                            {title: '核算者</br>签字', rowspan: 2, align: 'center', valign: 'middle'}
+                        ],
+                        [
+                            {field:'LastWaterValue', title: '1', align: 'center'},
+                            {field:'CurrentWaterValue', title: '2', align: 'center'},
+                            {field:'TotalWaterQuantity', title: '3', align: 'center'},
+                            {field:'WaterLevel', title: '4', align: 'center'},
+                            {field:'WaterGage', title: '5', align: 'center'},
+                            {field:'Col1', title: '6', align: 'center'},
+                            {field:'LastElectricValue', title: '7', align: 'center'},
+                            {field:'CurrentElectricValue', title: '8', align: 'center'},
+                            {field:'TotalElectricQuantity', title: '9', align: 'center'},
+                            {field:'Col2', title: '10', align: 'center'},
+                        ]
+                    ],
+                    responseHandler: function(res) {
+                        //debugger;
+                        return res.details;
+                    },
+                    onLoadSuccess: function(data) {
+                        //mergeCells(data, ["WellNum"], 1, $("#table_ui"));
+                        var count = data.length;
+                        var start = count - 5;
+                        oTable.element.bootstrapTable('mergeCells', {index: start, field: 'WellNum', rowspan: 5});
+                        oTable.element.bootstrapTable('mergeCells', {index: start, field: 'FirstStartTime', rowspan: 5, colspan: 7});
+                        oTable.element.bootstrapTable('mergeCells', {index: start, field: 'LastWaterValue', colspan: 2});
+                        oTable.element.bootstrapTable('mergeCells', {index: start + 1, field: 'LastWaterValue', colspan: 2});
+                        oTable.element.bootstrapTable('mergeCells', {index: start + 2, field: 'LastWaterValue', colspan: 2});
+                        oTable.element.bootstrapTable('mergeCells', {index: start + 3, field: 'LastWaterValue', colspan: 2});
+                        oTable.element.bootstrapTable('mergeCells', {index: start + 4, field: 'LastWaterValue', colspan: 2});
+                        oTable.element.bootstrapTable('mergeCells', {index: start, field: 'TotalWaterQuantity', colspan: 4});
+                        oTable.element.bootstrapTable('mergeCells', {index: start + 1, field: 'TotalWaterQuantity', colspan: 4});
+                        oTable.element.bootstrapTable('mergeCells', {index: start + 2, field: 'TotalWaterQuantity', colspan: 4});
+                        oTable.element.bootstrapTable('mergeCells', {index: start + 3, field: 'TotalWaterQuantity', colspan: 4});
+                        oTable.element.bootstrapTable('mergeCells', {index: start + 4, field: 'TotalWaterQuantity', colspan: 4});
+
+                        oTable.element.bootstrapTable('mergeCells', {index: start, field: 'LastElectricValue', colspan: 2});
+                        oTable.element.bootstrapTable('mergeCells', {index: start + 1, field: 'LastElectricValue', colspan: 2});
+                        oTable.element.bootstrapTable('mergeCells', {index: start + 2, field: 'LastElectricValue', colspan: 2});
+                        oTable.element.bootstrapTable('mergeCells', {index: start + 3, field: 'LastElectricValue', colspan: 2});
+                        oTable.element.bootstrapTable('mergeCells', {index: start + 4, field: 'LastElectricValue', colspan: 2});
+                        oTable.element.bootstrapTable('mergeCells', {index: start, field: 'Rate', colspan: 4});
+                        oTable.element.bootstrapTable('mergeCells', {index: start + 1, field: 'Rate', colspan: 4});
+                        oTable.element.bootstrapTable('mergeCells', {index: start + 2, field: 'Rate', colspan: 4});
+                        oTable.element.bootstrapTable('mergeCells', {index: start + 3, field: 'Rate', colspan: 4});
+                        oTable.element.bootstrapTable('mergeCells', {index: start + 4, field: 'Rate', colspan: 4});
+
+                        //TotalWaterQuantity
+                    }
+                })
+            }
+            return oTable;
+        }
+        $(function() {
+            var table = Table();
+            table.init();
+        })
+    </script>
+</head>
+<body>
+    <div class="container-fluid" >
+        <!--<div>-->
+            <!--<button type="button" class="btn btn-primary">Button</button>-->
+        <!--</div>-->
+        <table id="table_ui" class="table table-striped table-bordered table-hover"></table>
+    </div>
+</body>
+</html>

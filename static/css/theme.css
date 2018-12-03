@@ -1,0 +1,106 @@
+html,body {
+    padding: 0px;
+    margin: 0px;
+    height: 100%;
+    overflow: hidden;
+    font-size:12px;
+}
+.panel {
+    border:0px;
+}
+.panel-body {
+    font-weight:bold;
+}
+.panel {
+    border-radius:0px;
+    margin-bottom:0px;
+}
+.panel-heading {
+    border-radius:0px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.row {
+    padding:0px;
+    margin:0px;
+}
+.col-xs-3, .col-lg-3, .col-md-3 {
+    padding:0px;
+}
+.my-panel-title {
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+    padding:20px;
+}
+.full-screen { height: 100%; padding-left:0; padding-right:0; margin:0 }
+.my-top {
+    display: table;
+    height: 20%;
+    color: white;
+    padding-right: 15px;
+    padding-left: 15px;
+    width: 100%;
+    margin: 0px;
+    font-size: 18px;
+    text-align:center;
+}
+.my-top-row {
+    background-color: #8080aa;
+    border-bottom:2px solid #606099;
+}
+.my-body {
+    height: 80%;
+
+    /*margin: 0px;*/
+    top:0px;
+    left:0px;
+    right:0px;
+    bottom: 38px;
+    z-index: 1;
+}
+.my-body-background {
+    background-color: #ededed;
+}
+.my-body-container {
+    height: 100%;
+    overflow: auto;
+}
+.my-footer {
+    position: absolute;
+    display: table;
+    bottom: 0px;
+    width: 100%;
+    height: 38px;
+    background-color: rgba(81, 81, 96, 0.96);
+    max-height: 38px;
+    z-index: 2;
+    font-size: 12px;
+    padding: 5px 15px;
+    color: #2aabd2;
+}
+.my-footer .body {
+    display: table-cell;
+    vertical-align: middle;
+}
+.my-icon {
+    margin-right:5px;
+}
+.footer-danger {
+    background-color:red;
+}
+.footer-primary {
+    background-color:#8080ff;
+    color:white;
+}
+.my-text-good {
+    color:rgb(0, 200, 0)
+}
+
+.no_padding {
+    padding: 0px;
+}
+.fixed-table-container {
+    border:0px;
+}

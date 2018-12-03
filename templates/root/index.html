@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <!--
+    <meta charset="UTF-8">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="renderer" content="webkit"/>
+    <meta name="force-rendering" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">-->
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.css')}}" />
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap-theme.css')}}" />
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap-table.css')}}" />
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/theme.css')}}" />
+    <style type="text/css">
+        .nav {
+            margin-left: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .nav-tabs {
+            border: 0px;
+        }
+        .nav > li > a {
+            padding: 5px 15px;
+        }
+        .nav-tabs > li {
+            margin-bottom: 0px;
+        }
+        a {
+            color:white
+        }
+    </style>
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/bootstrap.js"></script>
+    <script>
+        $(window).resize(function() {
+            var w = $(window).height()
+            var t = $('.my-top-row').height()
+            var f = $('.my-footer').height()
+            $('.my-body').height(w - t - f - 10)
+            // -10 is my-footer's margin top + bottom
+        });
+    </script>
+</head>
+<body>
+    <div class="container-fluid full-screen my-body-background" >
+        <div class="row my-top-row">
+            <div class="my-top">
+                <div class="my-panel-title" >
+                    <span class="my-icon glyphicon glyphicon-dashboard"></span>DATA MONITOR
+                    <div style="font-size:12Px">
+                    Baoding Water Supply Company @copyright 2018
+                    </div>
+                </div>
+            </div>
+            <ul id="myTab" class="nav nav-tabs">
+                <li class="active">
+                    <a href="#home" data-toggle="tab" onclick="$('#frame').attr('src', '/monitor');">
+                        Monitor
+                    </a>
+                </li>
+                <li><a href="#ios" data-toggle="tab" onclick="$('#frame').attr('src','/config');return false;">Config</a></li>
+                <li class="dropdown">
+                    <a href="#" id="myTabDrop1" class="dropdown-toggle"
+                       data-toggle="dropdown">Java
+                        <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="myTabDrop1">
+                        <li><a href="#jmeter" tabindex="-1" data-toggle="tab">jmeter</a></li>
+                        <li><a href="#ejb" tabindex="-1" data-toggle="tab">ejb</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="row my-body">
+            <iframe id="frame" src="/monitor" width="100%" height="100%" frameborder="0"></iframe>
+        </div>
+        <div class="my-footer">
+            <div class="body">
+                PLC: <span class="my-text-good">Good</span>
+                | Server: <span class="my-text-good">Good</span>
+                | MongoDB: <span class="my-text-good">Good</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

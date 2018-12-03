@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.css')}}" />
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap-theme.css')}}" />
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap-table.css')}}" />
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/theme.css')}}" />
+    <style type="text/css">
+
+    </style>
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/bootstrap.js"></script>
+    <script type="application/javascript">
+        function tsToTime(timestamp){
+            if(timestamp == 0) return "-"
+            var now = new Date()
+            var t = new Date(timestamp * 1000)
+            var isToday = false
+            if(now.getFullYear() == t.getFullYear() &&
+                    now.getMonth() == t.getMonth() &&
+                    now.getDate() == t.getDate()) {
+                        isToday = true
+            }
+            var s = t.getHours() + ":" + t.getMinutes() + ":" + t.getSeconds()
+            if(!isToday) {
+                s = t.getFullYear() + "-" + (t.getMonth() + 1) + t.getDate() + " " + s
+            }
+            return s
+        }
+        function get() {
+            $.post('/monitor',function(ret) {
+                $('#timestamp').html(tsToTime(ret.timestamp))
+                $('#on_off').html(ret.on_off)
+                $('#on_times').html(ret.on_times)
+                $('#pressure').html(ret.pressure.toFixed(2))
+                $('#v1').html(ret.v1.toFixed(0))
+                $('#v2').html(ret.v2.toFixed(0))
+                $('#v3').html(ret.v3.toFixed(0))
+                $('#c1').html(ret.c1.toFixed(2))
+                $('#c2').html(ret.c2.toFixed(2))
+                $('#c3').html(ret.c3.toFixed(2))
+                $('#in_flow').html(ret.in_flow.toFixed(2))
+                $('#ac_flow').html(ret.ac_flow.toFixed(0))
+            }, "json")
+        }
+        window.setInterval(get, 1000);
+    </script>
+</head>
+<body>
+    <div class="container-fluid full-screen" >
+        <div class="row my-body" style="height: 100%">
+            <div class="my-body-container">
+                <div class="row">
+                    <div class="col-md-3 col-xs-3">
+                        <div class="panel panel-danger">
+                            <div class="panel-heading">
+                                <span class="my-icon glyphicon glyphicon-time"></span>Date
+                            </div>
+                            <div class="panel-body" id="timestamp">
+                                -
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-xs-3">
+                        <div class="panel panel-danger">
+                             <div class="panel-heading">
+                                <span class="my-icon glyphicon glyphicon-off"></span>On/Off
+                            </div>
+                            <div class="panel-body" id="on_off">
+                                -
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-xs-3">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                On Times
+                            </div>
+                            <div class="panel-body" id="on_times">
+                                -
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-xs-3">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <span class="my-icon glyphicon glyphicon-stats"></span>Pressure
+                            </div>
+                            <div class="panel-body" id="pressure">
+                                -
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3 col-xs-3">
+                        <div class="panel panel-info">
+                             <div class="panel-heading">
+                                <span class="my-icon glyphicon glyphicon-flash"></span>Voltage Phase A
+                            </div>
+                            <div class="panel-body" id="v1">
+                                -
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-xs-3">
+                        <div class="panel panel-info">
+                            <div class="panel-heading">
+                                <span class="my-icon glyphicon glyphicon-flash"></span>Voltage Phase B
+                            </div>
+                            <div class="panel-body" id="v2">
+                                -
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-xs-3">
+                        <div class="panel panel-info">
+                            <div class="panel-heading">
+                                <span class="my-icon glyphicon glyphicon-flash"></span>Voltage Phase C
+                            </div>
+                            <div class="panel-body" id="v3">
+                                -
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-xs-3">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <span class="my-icon glyphicon glyphicon-dashboard"></span>Accumulated Flow
+                            </div>
+                            <div class="panel-body" id="ac_flow">
+                                -
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3 col-xs-3">
+                        <div class="panel panel-info">
+                            <div class="panel-heading">
+                                <span class="my-icon glyphicon glyphicon-flash"></span>Current Phase A
+                            </div>
+                            <div class="panel-body" id="c1">
+                                -
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-xs-3">
+                        <div class="panel panel-info">
+                            <div class="panel-heading">
+                                <span class="my-icon glyphicon glyphicon-flash"></span>Current Phase B
+                            </div>
+                            <div class="panel-body" id="c2">
+                                -
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-xs-3">
+                        <div class="panel panel-info">
+                            <div class="panel-heading">
+                                <span class="my-icon glyphicon glyphicon-flash"></span>Current Phase C
+                            </div>
+                            <div class="panel-body" id="c3">
+                                -
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-xs-3">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                 <span class="my-icon glyphicon glyphicon-dashboard"></span>Instantaneous Flow
+                            </div>
+                            <div class="panel-body" id="in_flow">
+                                -
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
