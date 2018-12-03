@@ -4,6 +4,7 @@
     <title></title>
     <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.css')}}" />
     <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap-theme.css')}}" />
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap-editable.css')}}" />
     <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap-table.css')}}" />
     <link rel="stylesheet" type="text/css" href="{{static_url('css/theme.css')}}" />
     <style type="text/css">
@@ -37,9 +38,20 @@
         .table > tfoot > tr > th, .table > thead > tr > td,
         .table > tbody > tr > td, .table > tfoot > tr > td {
             border-top: 0px;
+            border-radius: 0px;
+            -webkit-border-radius: 0px;
         }
+        .table > caption + thead > tr:first-child > th,
+        .table > colgroup + thead > tr:first-child > th,
+        .table > thead:first-child > tr:first-child > th,
+        .table > caption + thead > tr:first-child > td,
+        .table > colgroup + thead > tr:first-child > td,
+        .table > thead:first-child > tr:first-child > td
         .fixed-table-container tbody td {
             border-left: 0px;
+            border-radius: 0px;
+            -webkit-border-radius: 0px;
+            -moz-border-radius: 0px;
         }
         .fixed-table-container thead th {
             border-left: 0px;
@@ -55,7 +67,9 @@
     <script src="/static/js/jquery.min.js"></script>
     <script src="/static/js/bootstrap.js"></script>
     <script src="/static/js/bootstrap-table.js"></script>
-    <script src="/static/js/bootstrap-table-zh-CN.js"></script>
+    <script src="/static/js/bootstrap-editable.js"></script>
+    <script src="/static/js/bootstrap-table-zh-CN.min.js"></script>
+    <script src="/static/js/bootstrap-table-editable.min.js"></script>
     <script type="application/javascript">
         var Table = function() {
             var oTable = new Object();
@@ -65,11 +79,39 @@
                     striped: true,
                     contentType: 'application/json;charset=utf-8',
                     columns: [
-                        {field: 'name', title: '名称', align: 'center'},
+                        {field: 'name', title: '名称', align: 'center',
+                            editable: {
+                                type:"text",
+                                mode:"popup"
+                            }
+                        },
                         {field: 'id', title: 'ID', align: 'center'},
-                        {field: 'address', title: '地址', align: 'center'},
-                        {field: 'type', title: '数据类型', align: 'center'},
-                        {field: 'save', title: '是否保存', align: 'center'},
+                        {field: 'address', title: '地址', align: 'center',
+                            editable: {
+                                type:"number",
+                                mode:"popup"
+                            }
+                        },
+                        {field: 'type', title: '数据类型', align: 'center',
+                            editable: {
+                                type:"select",
+                                source:[
+                                    {value:'short', text:'short[2]'},
+                                    {value:'int', text:'int[4]'},
+                                    {value:'float', text:'float[4]'},
+                                    {value:'double', text:'double[8]'}
+                                ]
+                            }
+                        },
+                        {field: 'save', title: '是否保存', align: 'center',
+                            editable: {
+                                type:"select",
+                                source:[
+                                    {value:true, text:'是'},
+                                    {value:false, text:'否'}
+                                ]
+                            }
+                        },
                         {title: '开', align: 'center'},
                     ],
                     height: 'auto',
@@ -81,6 +123,34 @@
                         debugger;
                         var count = data.length;
                         var start = count - 5;
+                    },
+                    onEditableSave: function(field, row, oldValue, $el) {
+                        return "";
+                        var newValue = row[field];//不能使用row.field
+                        if (!checkStrEqual(oldValue, newValue)) {
+                            $.ajax({
+                                type: "post",
+                                url: "/edit",
+                                data: {
+                                    'type': 'product',
+                                    'id': row.id,//获得所在行指定列的值
+                                    'newValue': newValue,
+                                    'field': field,
+                                    'oldValue':oldValue
+                                },
+                                success: function(data, status) {
+                                    if (status == "success") {
+                                        alert("编辑成功");
+                                    }
+                                },
+                                error: function() {
+                                    alert("Error");
+                                },
+                                complete: function() {
+
+                                }
+                            });
+                        }
                     }
                 })
 
