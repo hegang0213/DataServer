@@ -44,6 +44,23 @@
                 $('#c3').html(ret.c3.toFixed(2))
                 $('#in_flow').html(ret.in_flow.toFixed(2))
                 $('#ac_flow').html(ret.ac_flow.toFixed(0))
+                $('#frequency').html(ret.frequency.toFixed(0))
+                $('#power_con').html(ret.power_con.toFixed(2))
+                $('#reactive_power').html(ret.reactive_power.toFixed(2))
+                $('#power_factor').html(ret.power_factor.toFixed(2))
+                $('#energy').html(ret.energy.toFixed(2))
+                //debugger;
+                if(ret.is_high_frequency) {
+                    $('#console_panel').attr("class", "panel panel-danger")
+                    $('#console_panel .progress').show()
+                    $('#console_panel .value').html("High frequency ... " + ret.high_frequency_interval + "s")
+                }
+                else {
+                    $("#console_panel").attr("class", "panel panel-success")
+                    //$('#console_panel .progress').hide()
+                    $('#console_panel .value').html("Normal frequency ... every 1m")
+                }
+
             }, "json")
         }
         window.setInterval(get, 1000);
@@ -53,7 +70,9 @@
     <div class="container-fluid full-screen" >
         <div class="row my-body" style="height: 100%">
             <div class="my-body-container">
+                <!-- first row -->
                 <div class="row">
+                    <!-- timestamp -->
                     <div class="col-md-3 col-xs-3">
                         <div class="panel panel-danger">
                             <div class="panel-heading">
@@ -65,6 +84,7 @@
 
                         </div>
                     </div>
+                    <!-- on/off -->
                     <div class="col-md-3 col-xs-3">
                         <div class="panel panel-danger">
                              <div class="panel-heading">
@@ -76,6 +96,7 @@
 
                         </div>
                     </div>
+                    <!-- on times -->
                     <div class="col-md-3 col-xs-3">
                         <div class="panel panel-default">
                             <div class="panel-heading">
@@ -87,6 +108,7 @@
 
                         </div>
                     </div>
+                    <!-- pressure -->
                     <div class="col-md-3 col-xs-3">
                         <div class="panel panel-primary">
                             <div class="panel-heading">
@@ -99,8 +121,9 @@
                         </div>
                     </div>
                 </div>
-
+                <!-- second row -->
                 <div class="row">
+                    <!-- v1 -->
                     <div class="col-md-3 col-xs-3">
                         <div class="panel panel-info">
                              <div class="panel-heading">
@@ -112,6 +135,7 @@
 
                         </div>
                     </div>
+                    <!-- v2 -->
                     <div class="col-md-3 col-xs-3">
                         <div class="panel panel-info">
                             <div class="panel-heading">
@@ -123,6 +147,7 @@
 
                         </div>
                     </div>
+                    <!-- v3 -->
                     <div class="col-md-3 col-xs-3">
                         <div class="panel panel-info">
                             <div class="panel-heading">
@@ -134,6 +159,7 @@
 
                         </div>
                     </div>
+                    <!-- accumulated flow -->
                     <div class="col-md-3 col-xs-3">
                         <div class="panel panel-primary">
                             <div class="panel-heading">
@@ -146,8 +172,9 @@
                         </div>
                     </div>
                 </div>
-
+                <!-- third row -->
                 <div class="row">
+                    <!-- c1 -->
                     <div class="col-md-3 col-xs-3">
                         <div class="panel panel-info">
                             <div class="panel-heading">
@@ -159,6 +186,7 @@
 
                         </div>
                     </div>
+                    <!-- c2 -->
                     <div class="col-md-3 col-xs-3">
                         <div class="panel panel-info">
                             <div class="panel-heading">
@@ -169,6 +197,7 @@
                             </div>
                         </div>
                     </div>
+                    <!-- c3 -->
                     <div class="col-md-3 col-xs-3">
                         <div class="panel panel-info">
                             <div class="panel-heading">
@@ -179,6 +208,7 @@
                             </div>
                         </div>
                     </div>
+                    <!-- instantaneous flow -->
                     <div class="col-md-3 col-xs-3">
                         <div class="panel panel-primary">
                             <div class="panel-heading">
@@ -190,6 +220,91 @@
                         </div>
                     </div>
                 </div>
+                <!-- fourth row -->
+                <div class="row">
+                    <!-- frequency -->
+                    <div class="col-md-3 col-xs-3">
+                        <div class="panel panel-info">
+                            <div class="panel-heading">
+                                <span class="my-icon glyphicon glyphicon-flash"></span>Frequency
+                            </div>
+                            <div class="panel-body" id="frequency">
+                                -
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- power consumption -->
+                    <div class="col-md-3 col-xs-3">
+                        <div class="panel panel-info">
+                            <div class="panel-heading">
+                                <span class="my-icon glyphicon glyphicon-flash"></span>Power Consumption
+                            </div>
+                            <div class="panel-body" id="power_con">
+                                -
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Reactive Power -->
+                    <div class="col-md-3 col-xs-3">
+                        <div class="panel panel-info">
+                            <div class="panel-heading">
+                                <span class="my-icon glyphicon glyphicon-flash"></span>Reactive Power
+                            </div>
+                            <div class="panel-body" id="reactive_power">
+                                -
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Power Factor -->
+                    <div class="col-md-3 col-xs-3">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                 <span class="my-icon glyphicon glyphicon-dashboard"></span>Power Factor
+                            </div>
+                            <div class="panel-body" id="power_factor">
+                                -
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- fifth row -->
+                <div class="row">
+                    <div class="col-md-3 col-xs-3">
+                        <div class="panel panel-info">
+                            <div class="panel-heading">
+                                <span class="my-icon glyphicon glyphicon-flash"></span>Energy
+                            </div>
+                            <div class="panel-body" id="energy">
+                                -
+                            </div>
+                        </div>
+                    </div>
+                    <!-- console -->
+                    <div class="col-md-9 col-xs-9">
+                        <div class="panel panel-success" id="console_panel">
+                            <div class="panel-heading">
+                                <span class="my-icon glyphicon glyphicon-exclamation-sign"></span>Stream
+                            </div>
+                            <div class="panel-body">
+                                <span class="value" style="float: left">-</span>
+                                <div class="progress progress-striped active"
+                                     style="float: left; height: 15px; margin-bottom: 0px; margin-left: 10px; width: 20%">
+                                    <div class="progress-bar progress-bar-danger" role="progressbar"
+                                         aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"
+                                         style="width: 100%;">
+                                        <span class="sr-only">Processing...</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+
+
             </div>
         </div>
     </div>

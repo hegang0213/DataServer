@@ -1,20 +1,11 @@
 import time
 import struct
-import random
-import tornado.ioloop
-import tornado.gen
-from tornado.concurrent import run_on_executor
-from concurrent.futures import ThreadPoolExecutor
-import json
 import collections
-import mongo
-import modbus
-import log
 
 
 PUMP_START = 1
 PUMP_STOP = 0
-HIGH_FREQUENCY_INTERVAL = 300   # 5m
+HIGH_FREQUENCY_INTERVAL = 60   # 5m
 
 
 class Data:
@@ -45,13 +36,14 @@ class Data:
         self.frequency = 0
         self.energy = 0
         self.on_times = 0
-        self.is_first = True
+        self._is_first = True
 
     def set_on_off(self, timestamp, state):
         self.timestamp = timestamp
-        if isFirst:                                 # first record
+        timestamp -= 1
+        if self._is_first:                                 # first record
             self.on_off = state
-            self.is_first = False
+            self._is_first = False
         else:
             if self.on_off != state:                # not first record
                 if state == PUMP_START:             # pump started
@@ -74,7 +66,7 @@ class Data:
         if self.off_begin > 0:
             diff = now - self.off_begin
 
-        if diff <= HIGH_FREQUENCE_INTERVL:
+        if diff <= HIGH_FREQUENCY_INTERVAL:
             return True                             # need hight frequence record
         return False
 
@@ -114,67 +106,9 @@ class Data:
         dict["c2"] = self.c2
         dict["c3"] = self.c3
         dict["power_con"] = self.power_con
+        dict["reactive_power"] = self.reactive_power
         dict["power_factor"] = self.power_factor
         dict["frequency"] = self.frequency
         dict["energy"] = self.energy
         dict["on_times"] = self.on_times
         return dict
-
-
-class IOData:
-    executor = ThreadPoolExecutor(10)
-    timestamp = 0
-
-    @staticmethod
-    def instance():
-        if not hasattr(IOData, "_instance"):
-            IOData._instance = IOData()
-        return IOData._instance
-
-    def do(self):
-        print(time.time())
-
-    def read(self):
-        t = int(time.time())
-        lt = time.localtime(t)
-        if t == IOData.timestamp:
-            print("IOData.read() was broken, cause the time has been used.")
-            return
-
-        # print(lt.tm_sec, IOData.timestamp, t)
-        IOData.timestamp = t
-
-        master = modbus.ModbusMaster.instance()
-        values = master.read()
-        print("modbus:", values)
-        log.Log.instance().d("modbus" + str(values))
-
-        d = Data.instance()
-        d.timestamp = t
-        d.pressure = random.uniform(0, 1)
-        d.ac_flow = random.uniform(0, 100)
-        d.v1 = random.uniform(360, 380)
-        d.v2 = random.uniform(360, 380)
-        d.v3 = random.uniform(360, 380)
-        d.c1 = random.uniform(10, 16)
-        d.c2 = random.uniform(10, 16)
-        d.c3 = random.uniform(10, 16)
-
-        if d.high_frequency_record():    # high speed write into database every second
-            tornado.ioloop.IOLoop.instance().add_callback(self.write, d)
-        else:
-            if lt.tm_sec == 0:              # low speed write into database every minute
-                tornado.ioloop.IOLoop.instance().add_callback(self.write, d)
-
-    @run_on_executor
-    def write(self, data):
-        package = Data.pack(data)
-        print("IOData.write(): ", package)
-        print(Data.unpack(package))
-        result = data.to_json()
-        json_string = json.dumps(result)
-        print(json_string)
-        # cnn = mongo.MongoConnection.instance()
-        # db = cnn.client['data']
-        # coll = db['current']
-        # coll.insert_one(result)

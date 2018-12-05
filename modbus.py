@@ -1,5 +1,3 @@
-import modbus_tk
-import modbus_tk.defines as cst
 import modbus_tk.modbus_tcp as modbus_tcp
 
 
@@ -25,15 +23,15 @@ class ModbusMaster:
         # fffH  water_level     pressure    in_flow     v1
         # HHff  v2              v3          c1          c2
         # ffff  c3              power_con   re_power    power_factor
-        # Hfid  frequency       enery       on_times    ac_flow
+        # Hfid  frequency       energy      on_times    ac_flow
         # H     on_off
         # =======================================
         try:
             return self.master.execute(slave=1,
-                                    function_code=3,
-                                    starting_address=0,
-                                    quantity_of_x=31,
-                                    data_format=">fffHHHffffffHfidH")
+                                       function_code=3,
+                                       starting_address=0,
+                                       quantity_of_x=31,
+                                       data_format=">fffHHHffffffHfidH")
         # quantity_of_x = 62,
         # data_format = ">fffHHHffffffHfidH")
         except Exception as e:

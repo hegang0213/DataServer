@@ -2,6 +2,7 @@
   <dictionary name="hegang">
     <words>
       <w>dataserver</w>
+      <w>modbus</w>
     </words>
   </dictionary>
 </component>

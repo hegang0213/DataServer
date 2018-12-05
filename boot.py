@@ -2,10 +2,14 @@ import tornado.web
 import tornado.ioloop
 from tornado import gen
 import tornado.httpserver
-from data import Data, IOData
+from data.data import IOData
+import model.data
+from model.data import Data
 from log import Log
 import time
 import json
+import modbus
+
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
@@ -19,13 +23,15 @@ class MonitorHandler(tornado.web.RequestHandler):
 
     def post(self):
         json_object = Data.instance().to_json()
+        json_object["is_high_frequency"] = Data.instance().high_frequency_record()
+        json_object["high_frequency_interval"] = model.data.HIGH_FREQUENCY_INTERVAL
         json_string = json.dumps(json_object)
         self.write(json_string)
 
 
 class ConfigHandler(tornado.web.RequestHandler):
     def get(self):
-        with open("dataserver.conf", 'r') as f:
+        with open("conf/dataserver.conf", 'r') as f:
             json_string = f.read()
             json_object = json.loads(json_string)
         self.render("root/config.html", config=json.dumps(json_object))
@@ -59,7 +65,21 @@ app = tornado.web.Application([
 ], **settings)
 
 
+MAIN_CONFIG = None
+
+import testing.tcp_server
+
 if __name__ == "__main__":
+    with open("conf/main.conf", 'r') as f:
+        json_string = f.read()
+        MAIN_CONFIG = json.loads(json_string)
+        m = modbus.ModbusMaster.instance(MAIN_CONFIG['modbus_from']['host'],
+                                         MAIN_CONFIG['modbus_from']['port'])
+
+    tcp_server = testing.tcp_server.MyServer()
+    tcp_server.listen(address="127.0.0.1", port=10601)
+    # tcp_server.start()
+
     server = tornado.httpserver.HTTPServer(app)
     server.listen(8080)
     tornado.ioloop.PeriodicCallback(IOData.instance().read, 1000).start()

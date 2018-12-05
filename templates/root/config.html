@@ -85,7 +85,12 @@
                                 mode:"popup"
                             }
                         },
-                        {field: 'id', title: 'ID', align: 'center'},
+                        {field: 'id', title: 'ID', align: 'center',
+                            editable: {
+                                type:"text",
+                                mode:"popup"
+                            }
+                        },
                         {field: 'address', title: '地址', align: 'center',
                             editable: {
                                 type:"number",
@@ -112,7 +117,6 @@
                                 ]
                             }
                         },
-                        {title: '开', align: 'center'},
                     ],
                     height: 'auto',
                     responseHandler: function(res) {
@@ -125,9 +129,13 @@
                         var start = count - 5;
                     },
                     onEditableSave: function(field, row, oldValue, $el) {
-                        return "";
+                        //return "";
+                        // debugger;
                         var newValue = row[field];//不能使用row.field
-                        if (!checkStrEqual(oldValue, newValue)) {
+                        var channel = config.current;
+                        alert(channel.name + "," + newValue)
+                        return "";
+                        if (oldValue !=  newValue) {
                             $.ajax({
                                 type: "post",
                                 url: "/edit",
@@ -167,28 +175,38 @@
         var Config = function() {
             var oConfig = new Object();
             oConfig.config_string = '{% raw config %}';
+            oConfig.current = undefined;
             oConfig.init = function() {
                 oConfig.items = JSON.parse(oConfig.config_string);
+                // debugger;
+                if(oConfig.items != undefined && oConfig.items.length > 0){
+                    oConfig.current = oConfig.items[0]
+                }
             }
             oConfig.fillNavigation = function() {
                 var nav = $('#nav');
                 $.each(oConfig.items, function(i, item) {
-
                     if(i == 0)
-                        nav.append("<li class='active'>" + item.name + "</li>")
+                        nav.append("<li class='active'>"
+                            + item.name
+                            + "<sup style='margin-left:5px'>" + item.protocol + "</sup></li>")
                     else
-                        nav.append("<li>" + item.name + "</li>")
+                        nav.append("<li>"
+                            + item.name
+                            + "<sup style='margin-left:5px'>" + item.protocol + "</sup></li>")
                 });
 
             }
             return oConfig;
         }
+
+        config = Config();
         $(document).ready(function() {
             var table = Table();
             table.init();
-            var config = Config();
             config.init();
-            table.load(config.items[0].tags)
+            if(config.current != undefined)
+                table.load(config.current.tags)
             config.fillNavigation();
         })
         // $(window).resize(function() {
