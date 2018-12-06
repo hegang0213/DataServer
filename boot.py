@@ -2,12 +2,13 @@ import tornado.web
 import tornado.ioloop
 from tornado import gen
 import tornado.httpserver
-from data.data import IOData
+from iobase.data import IOStream
 import model.data
 from model.data import Data
 from log import Log
 import time
 import json
+import config
 import modbus
 
 
@@ -37,6 +38,18 @@ class ConfigHandler(tornado.web.RequestHandler):
         self.render("root/config.html", config=json.dumps(json_object))
 
 
+class StreamHandler(tornado.web.RequestHandler):
+    def get(self):
+        self.render("root/stream.html")
+
+    def post(self):
+        result = {
+            "hooks": IOStream.instance().hook.get_hooks(),
+            "logs": IOStream.instance().logs()
+        }
+        self.write(json.dumps(result))
+
+
 class LogHandler(tornado.web.RequestHandler):
     @gen.coroutine
     def get(self):
@@ -61,28 +74,25 @@ app = tornado.web.Application([
     (r'/', MainHandler),
     (r'/monitor', MonitorHandler),
     (r'/config', ConfigHandler),
+    (r'/stream', StreamHandler),
     (r'/log', LogHandler),
 ], **settings)
 
 
-MAIN_CONFIG = None
-
 import testing.tcp_server
 
 if __name__ == "__main__":
-    with open("conf/main.conf", 'r') as f:
-        json_string = f.read()
-        MAIN_CONFIG = json.loads(json_string)
-        m = modbus.ModbusMaster.instance(MAIN_CONFIG['modbus_from']['host'],
-                                         MAIN_CONFIG['modbus_from']['port'])
+    conf = config.Configure.instance()
 
     tcp_server = testing.tcp_server.MyServer()
     tcp_server.listen(address="127.0.0.1", port=10601)
     # tcp_server.start()
 
+    modbus.ModbusMaster.instance(conf.modbus_tcp_master.host, conf.modbus_tcp_master.port)
     server = tornado.httpserver.HTTPServer(app)
-    server.listen(8080)
-    tornado.ioloop.PeriodicCallback(IOData.instance().read, 1000).start()
+    server.listen(conf.main.web)
+    tornado.ioloop.PeriodicCallback(IOStream.instance().read, conf.loop_interval.read).start()
+    tornado.ioloop.PeriodicCallback(IOStream.instance().upload, conf.loop_interval.upload).start()
     tornado.ioloop.IOLoop.instance().start()
 
 

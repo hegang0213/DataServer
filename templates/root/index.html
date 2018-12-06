@@ -35,6 +35,10 @@
     <script src="/static/js/jquery.min.js"></script>
     <script src="/static/js/bootstrap.js"></script>
     <script>
+        function navigate_to(url) {
+            $('iframe').attr('src', url);
+            return false;
+        }
         $(window).resize(function() {
             var w = $(window).height()
             var t = $('.my-top-row').height()
@@ -57,20 +61,19 @@
             </div>
             <ul id="myTab" class="nav nav-tabs">
                 <li class="active">
-                    <a href="#home" data-toggle="tab" onclick="$('#frame').attr('src', '/monitor');">
+                    <a href="#home" data-toggle="tab" onclick="navigate_to('/monitor');">
                         Monitor
                     </a>
                 </li>
-                <li><a href="#ios" data-toggle="tab" onclick="$('#frame').attr('src','/config');return false;">Config</a></li>
-                <li class="dropdown">
-                    <a href="#" id="myTabDrop1" class="dropdown-toggle"
-                       data-toggle="dropdown">Java
-                        <b class="caret"></b>
+                <li>
+                    <a href="#home" data-toggle="tab" onclick="navigate_to('/config');">
+                        Config
                     </a>
-                    <ul class="dropdown-menu" role="menu" aria-labelledby="myTabDrop1">
-                        <li><a href="#jmeter" tabindex="-1" data-toggle="tab">jmeter</a></li>
-                        <li><a href="#ejb" tabindex="-1" data-toggle="tab">ejb</a></li>
-                    </ul>
+                </li>
+                <li>
+                    <a href="#home" data-toggle="tab" onclick="navigate_to('/stream');">
+                        IOStream
+                    </a>
                 </li>
             </ul>
         </div>

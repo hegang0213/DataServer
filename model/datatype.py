@@ -2,7 +2,7 @@ import struct
 
 
 switcher = {
-    "H": {'len': 2, 'func': lambda v: H2int(v)},
+    "H": {'len': 1, 'func': lambda v: H2int(v)},
     "f": {'len': 2, 'func': lambda v: f2int(v)},
     "i": {'len': 2, 'func': lambda v: i2int(v)},
     "d": {'len': 4, 'func': lambda v: d2int(v)}
@@ -25,8 +25,3 @@ def d2int(v):
     return struct.unpack(">HHHH", struct.pack(">d", v))
 
 
-def sizeof(data):
-    count = 0
-    for k, v in data:
-        count += switcher.get(k)
-    return count

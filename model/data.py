@@ -1,11 +1,30 @@
 import time
 import struct
 import collections
+import config
 
 
 PUMP_START = 1
 PUMP_STOP = 0
-HIGH_FREQUENCY_INTERVAL = 60   # 5m
+HIGH_FREQUENCY_INTERVAL = config.Configure.instance().loop_interval.high_frequency / 1000   # 5m
+
+
+defines = {
+    'in_flow': 'f',
+    'ac_flow': 'd',
+    'v1': 'H', 'v2': 'H', 'v3': 'H',
+    'c1': 'f', 'c2': 'f', 'c3': 'f',
+    'timestamp': 'i',
+    'water_level': 'f',
+    'frequency': 'H',
+    'power_con': 'f',
+    # 'reactive_power': 'f',
+    'power_factor': 'f',
+    'energy': 'f',
+    'on_off': 'H',
+    'on_times': 'i',
+    'pressure': 'f'
+}
 
 
 class Data:
@@ -91,24 +110,24 @@ class Data:
         return struct.unpack(Data.format, data_pack)
 
     def to_json(self):
-        dict = collections.OrderedDict()
-        dict["timestamp"] = self.timestamp
-        dict["upload"] = False
-        dict["on_off"] = self.on_off
-        dict["water_level"] = self.water_level
-        dict["pressure"] = self.pressure
-        dict["in_flow"] = self.in_flow
-        dict["ac_flow"] = self.ac_flow
-        dict["v1"] = self.v1
-        dict["v2"] = self.v2
-        dict["v3"] = self.v3
-        dict["c1"] = self.c1
-        dict["c2"] = self.c2
-        dict["c3"] = self.c3
-        dict["power_con"] = self.power_con
-        dict["reactive_power"] = self.reactive_power
-        dict["power_factor"] = self.power_factor
-        dict["frequency"] = self.frequency
-        dict["energy"] = self.energy
-        dict["on_times"] = self.on_times
-        return dict
+        order_dict = collections.OrderedDict()
+        order_dict["timestamp"] = self.timestamp
+        order_dict["upload"] = False
+        order_dict["on_off"] = self.on_off
+        order_dict["water_level"] = self.water_level
+        order_dict["pressure"] = self.pressure
+        order_dict["in_flow"] = self.in_flow
+        order_dict["ac_flow"] = self.ac_flow
+        order_dict["v1"] = self.v1
+        order_dict["v2"] = self.v2
+        order_dict["v3"] = self.v3
+        order_dict["c1"] = self.c1
+        order_dict["c2"] = self.c2
+        order_dict["c3"] = self.c3
+        order_dict["power_con"] = self.power_con
+        order_dict["reactive_power"] = self.reactive_power
+        order_dict["power_factor"] = self.power_factor
+        order_dict["frequency"] = self.frequency
+        order_dict["energy"] = self.energy
+        order_dict["on_times"] = self.on_times
+        return order_dict

@@ -1,8 +1,6 @@
 from data import mongo
-import datatype
 import struct
 import tcpclient
-import time
 from tornado import gen
 import tornado.ioloop
 

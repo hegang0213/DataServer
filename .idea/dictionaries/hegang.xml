@@ -3,6 +3,8 @@
     <words>
       <w>dataserver</w>
       <w>modbus</w>
+      <w>tcpclient</w>
+      <w>tcpserver</w>
     </words>
   </dictionary>
 </component>

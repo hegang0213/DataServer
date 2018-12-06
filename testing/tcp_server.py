@@ -30,19 +30,19 @@ class TCPConnection(object):
         self.stream.set_close_callback(self._on_connection_close)
         # while True:
         self.stream.read_until(self.EOF, self._message_callback)
-        print("has connected...")
+        print("TcpServer -> a client has connected...")
 
     def _on_message(self, data):
         try:
             s = data.decode('latin1')
-            print("Received: %s" % s)
-            if self._check(data):
-                self._deal(data)
-                print('Is valid format data, okay!')
+            print("TcpServer -> received: %s" % s)
+            if TCPConnection._check(s):
+                print('TcpServer -> Is valid format data, okay!')
+                self._deal(s)
             else:
-                self.write(b'Bad format')
+                print('TcpServer ->', 'deal failed.')
         except Exception as ex:
-            print("Exception: %s", str(ex))
+            print("TcpServer -> Exception: %s", str(ex))
 
     def _clear_request_state(self):
         """Clears the per-request state.
@@ -70,8 +70,11 @@ class TCPConnection(object):
     def write(self, chunk, callback=None):
         """Writes a chunk of output to the stream."""
         if not self.stream.closed():
-            self._write_callback = stack_context.wrap(callback)
-            self.stream.write(chunk, self._on_write_complete)
+            if callback:
+                self._write_callback = stack_context.wrap(callback)
+                self.stream.write(chunk, self._on_write_complete)
+            else:
+                self.stream.write(chunk)
 
     def _on_write_complete(self):
         if self._write_callback is not None:
@@ -79,24 +82,32 @@ class TCPConnection(object):
             self._write_callback = None
             callback()
 
-    def _check(self, data_string):
+    @staticmethod
+    def _check(data_string):
         try:
             arr = data_string.split('\n\n')
-            if len(arr) < 3:
+            if len(arr) < 4:
                 return False
             # uuid_string = arr[0]
             # uid = uuid.UUID(bytes=bytes(uuid_string))
-
+            return arr[0] == "[BEGIN]" and arr[-1] == "[END]"
         except Exception as e:
-            print(e)
+            print('TcpServer ->', e)
             return False
 
     def _deal(self, data_string):
         arr = data_string.split('\n\n')
-        if len(arr) != 3:
-            return False
-        uuid_string = arr[0]
-        uid = uuid.UUID(bytes=uuid_string.bytes)
-        ret = uid + "\nok\n[END]"
-        self.write(ret.decode())
+        uuid_string = arr[1]
+        header = arr[2].split(',')
+        data_format = arr[3]
+        print('TcpServer ->', header)
+        print('TcpServer ->', data_format)
+        for item in arr[4:-1]:
+            b = item.encode('latin1')
+            values = struct.unpack(">" + data_format, b)
+            print('TcpServer ->', values)
+
+        response = """[BEGIN]\n\n%s\n\nok\n\n[END]""" % uuid_string
+        self.write(response.encode())
+        print('TcpServer ->', 'reply')
 

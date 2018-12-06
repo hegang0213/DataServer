@@ -2,6 +2,10 @@ from tornado import gen
 import tornado.ioloop
 import socket
 
+BEGIN = b'[BEGIN]'
+CRLF = b'\n\n'
+EOF = b'[END]'
+
 
 class TcpClient(object):
     @staticmethod
@@ -15,7 +19,6 @@ class TcpClient(object):
         self.port = port
         self.socket = None
         self.stream = None
-        self.EOF = b'[END]'
         self._on_received_callback = None
 
     @gen.coroutine
@@ -24,7 +27,7 @@ class TcpClient(object):
         self.stream = tornado.iostream.IOStream(self.socket)
         yield self.stream.connect((self.host, self.port))
         self.stream.set_close_callback(self.on_close)
-        self.stream.read_until(self.EOF, self.on_received)
+        self.stream.read_until(EOF, self.on_received)
 
     @gen.coroutine
     def write(self, message):
@@ -41,7 +44,7 @@ class TcpClient(object):
         self.connect()
 
     def on_received(self, data):
-        if not self._on_received_callback:
+        if self._on_received_callback is not None:
             self._on_received_callback(data)
 
     def set_on_received_callback(self, callback):

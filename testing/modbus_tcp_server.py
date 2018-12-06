@@ -3,31 +3,11 @@ import modbus_tk.defines as define
 import struct
 import time
 import random
+from model.datatype import switcher, f2int
 
 
-switcher = {
-    "H": {'len': 2, 'func': lambda: H2int},
-    "f": {'len': 2, 'func': lambda: f2int},
-    "i": {'len': 2, 'func': lambda: i2int},
-    "d": {'len': 4, 'func': lambda: d2int}
-}
 last_on_off = None
 last_start = None
-
-
-def H2int(v):
-    return v
-
-def f2int(v):
-    return struct.unpack(">HH", struct.pack(">f", v))
-
-
-def i2int(v):
-    return struct.unpack(">HH", struct.pack(">i", v))
-
-
-def d2int(v):
-    return struct.unpack(">HHHH", struct.pack(">d", v))
 
 
 def sizeof(data):
@@ -41,7 +21,7 @@ def sizeof(data):
 if __name__ == "__main__":
     data = [
         # 0 2 4
-        ("f", 0.12), ("f", 100.5), ("f", 36.8),
+        ("f", 0.12), ("f", 0.28), ("f", 36.8),
         # 6 7 8
         ("H", 386), ("H", 381), ("H", 382),
         # 9 - c1, 11 - c2, 13 - c3
@@ -53,28 +33,19 @@ if __name__ == "__main__":
         # 26  30
         ("d", 80056), ("H", 0)
     ]
-    l = sizeof(data)
+    length = sizeof(data)
 
     try:
         server = tcp.TcpServer(port=10502, timeout_in_sec=5)
         server.start()
         slave = server.add_slave(1)
-        slave.add_block("V", define.HOLDING_REGISTERS, 0, l)
-        # values = struct.unpack(">HH", struct.pack(">f", 0.12))
-        # fffHHHffffffHfidH
+        slave.add_block("V", define.HOLDING_REGISTERS, 0, length)
 
         start = 0
         for k, v in data:
-            l = switcher.get(k)['len']
-            if k == "f":
-                slave.set_values("V", start, f2int(v))
-            elif k == "i":
-                slave.set_values("V", start, i2int(v))
-            elif k == "d":
-                slave.set_values("V", start, d2int(v))
-            elif k == "H":
-                slave.set_values("V", start, v)
-            start += l
+            o = switcher.get(k)
+            slave.set_values("V", start, o['func'](v))
+            start += o['len']
 
         time.sleep(5)
         while True:

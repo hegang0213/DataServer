@@ -32,6 +32,7 @@
         }
         function get() {
             $.post('/monitor',function(ret) {
+                //debugger;
                 $('#timestamp').html(tsToTime(ret.timestamp))
                 $('#on_off').html(ret.on_off)
                 $('#on_times').html(ret.on_times)

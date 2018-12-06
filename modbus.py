@@ -31,7 +31,11 @@ class ModbusMaster:
                                        function_code=3,
                                        starting_address=0,
                                        quantity_of_x=31,
-                                       data_format=">fffHHHffffffHfidH")
+                                       data_format=">fffH" +
+                                                   "HHff" +
+                                                   "ffff" +
+                                                   "Hfid" +
+                                                   "H")
         # quantity_of_x = 62,
         # data_format = ">fffHHHffffffHfidH")
         except Exception as e:

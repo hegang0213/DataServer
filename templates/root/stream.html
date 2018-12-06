@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.css')}}" />
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap-theme.css')}}" />
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap-table.css')}}" />
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/theme.css')}}" />
+    <style type="text/css">
+        .nav-tabs > li {
+            margin: 0px;
+        }
+        .nav > li {
+            padding: 11px 15px;
+            background-color: #bac1c9;
+            min-height: 40px;
+        }
+        .my-title {
+            padding: 12px 15px;
+            background-color: #444444;
+            color: white;
+            min-height: 40px;
+            max-height: 40px;
+        }
+        .border-left {
+            border-left: 1px solid #bac1c9;
+        }
+        .date {
+            color: #639ac9;
+        }
+        .text-normal {
+            color: #b4b4b4;
+        }
+    </style>
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/bootstrap.js"></script>
+    <script type="application/javascript">
+        function get() {
+            $.post('/stream',function(ret) {
+                hook_el = $("#hook")
+                hook_el.html('');
+                var i = 0
+                for(var hook in ret.hooks) {
+                    hook_el.append("<li>" + hook + "</li>");
+                    i++
+                }
+                if(i == 0)
+                    hook_el.append("<li>No items</li>")
+                var s = ""
+                logs_el = $('#logs')
+                logs_el.html('')
+                for(var i = 0; i < ret.logs.length; i++) {
+                    //debugger;
+                    var log = ret.logs[i]
+                    var s1 = ""
+                    if(log['type'] == 'normal')
+                        s1 = "<span class='text-normal'>[" + log['type'] + "]</span>"
+                    else
+                        s1 = "<span class='text-danger'>[" + log['type'] + "]</span>"
+                    s1 = s1 + " <span class='date'>" + log['time'] + "</span>" + log['message']
+                    if(s == "")
+                        s = s1 + "<br>"
+                    else
+                        s += s1 + "<br>"
+                }
+                logs_el.html(s);
+                //resize()
+
+            }, "json")
+        }
+        //
+        $(function() {
+            //get()
+            resize()
+            window.setInterval(get, 3000);
+        })
+        $(window).resize(function() {
+            resize()
+        })
+        function resize() {
+            var w = $(window).height()
+            $('#logs').height(w - 40 - 20)
+            $('#hook').height(w - 40)
+        }
+    </script>
+</head>
+<body>
+    <div class="container-fluid full-screen my-body-background" >
+        <div class="row my-body" style="height: 100%">
+            <div class="my-body-container" style="overflow-y: hidden">
+                <div class="row">
+                    <div class="col-md-3 col-xs-3" style="height: 100%;" id="left">
+                        <div class="my-title">
+                            <span class="glyphicon glyphicon-tasks my-icon"></span>
+                            Hook
+                        </div>
+                        <ul class="nav nav-tabs nav-stacked" id="hook" style="overflow-y: auto">
+                        </ul>
+                    </div>
+                    <div class="col-md-9 col-xs-9 no_padding" style="height:100%" id="right">
+                        <div class="my-title">
+                            <span class="glyphicon glyphicon-tags my-icon"></span>
+                            Logs
+                        </div>
+                        <div id="logs" class="border-left" style="padding: 10px; overflow-y: auto">
+                            <img src="/static/img/loading.gif" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
