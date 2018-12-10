@@ -37,6 +37,8 @@ class Configure:
             self.loop_interval.read = section["read"]
             self.loop_interval.upload = section["upload"]
             self.loop_interval.high_frequency = section["high_frequency"]
+            self.loop_interval.delete = section["delete"]
+            self.loop_interval.delete_days_before = section["delete_days_before"]
 
             section = conf["main"]
             self.main.sn = section["sn"]
@@ -69,6 +71,8 @@ class LoopIntervalConf:
         self.read = 1000
         self.upload = 60000
         self.high_frequency = 300000
+        self.delete = 3600000
+        self.delete_days_before = 7
 
 
 class MainConf:

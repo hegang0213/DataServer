@@ -1,6 +1,8 @@
 import modbus_tk.modbus_tcp as tcp
 import modbus_tk.defines as define
-import struct
+from tornado import gen
+from tornado.concurrent import run_on_executor
+from concurrent.futures import ThreadPoolExecutor
 import time
 import random
 from model.datatype import switcher, f2int
@@ -18,7 +20,8 @@ def sizeof(data):
     return count
 
 
-if __name__ == "__main__":
+def main():
+    global last_on_off, last_start
     data = [
         # 0 2 4
         ("f", 0.12), ("f", 0.28), ("f", 36.8),
@@ -47,7 +50,7 @@ if __name__ == "__main__":
             slave.set_values("V", start, o['func'](v))
             start += o['len']
 
-        time.sleep(5)
+        time.sleep(2)
         while True:
             state = random.randint(0, 1)
             can_write = False
@@ -80,4 +83,7 @@ if __name__ == "__main__":
     finally:
         server.stop()
 
+
+if __name__ == '__main__':
+    main()
 

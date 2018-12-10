@@ -31,9 +31,9 @@ class LogBase:
     def __init__(self):
         self.cache = []
         self.types = set()
-        self.max_length = 100
+        self.max_length = 500
 
-    def max(self, length=100):
+    def max(self, length=500):
         if length < 50:
             length = 50
         if length > 500:
@@ -45,16 +45,15 @@ class LogBase:
 
     def write_t(self, log_type="normal", *args):
         self.types.add(log_type)
-        while len(self.cache) > self.max_length:
+        count = len(self.cache)
+        while count > self.max_length:
             self.cache.pop(self.max_length - 1)
+            count = len(self.cache)
         time_string = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         s = ""
         for arg in args:
             s += " " + arg
         self.cache.insert(0, {"type": log_type, "time": time_string, "message": s})
-
-    def types(self):
-        return self.types
 
     def logs(self):
         return self.cache
@@ -63,5 +62,5 @@ class LogBase:
         result = []
         for c in self.cache:
             if c["type"] == log_type:
-                result.insert(c)
+                result.append(c)
         return result

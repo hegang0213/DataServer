@@ -13,9 +13,17 @@
             margin: 0px;
         }
         .nav > li {
-            padding: 11px 15px;
-            background-color: #bac1c9;
-            min-height: 40px;
+            /*padding: 11px 15px;*/
+            /*background-color: #bac1c9;*/
+            /*min-height: 40px;*/
+        }
+        .nav-pills > li > a
+        {
+            border-radius: 0px;
+        }
+        .nav-pills > li > a:hover {
+            background: #28a4c9;
+            color: white;
         }
         .my-title {
             padding: 12px 15px;
@@ -33,21 +41,40 @@
         .text-normal {
             color: #b4b4b4;
         }
+        .nav-stacked > li + li {
+            padding-top: 0px;
+        }
     </style>
     <script src="/static/js/jquery.min.js"></script>
     <script src="/static/js/bootstrap.js"></script>
     <script type="application/javascript">
+        var log_type = ""
+        function select_type(el) {
+            log_type = el.text()
+            if(log_type == '[All]')
+                log_type = ""
+            el.parent().parent().find('li').attr('class', '')
+            el.parent().attr('class', 'active');
+            get()
+            return false;
+        }
         function get() {
-            $.post('/stream',function(ret) {
-                hook_el = $("#hook")
-                hook_el.html('');
-                var i = 0
-                for(var hook in ret.hooks) {
-                    hook_el.append("<li>" + hook + "</li>");
-                    i++
+            $.post('/stream', {'type':log_type},
+                function(ret) {
+                types_el = $("#types")
+                types_el.html('');
+                if(log_type == "")
+                    types_el.append("<li class='active'><a href='#home' onclick='select_type($(this))'>[All]</a></li>")
+                else
+                    types_el.append("<li><a href='#home' onclick='select_type($(this))'>[All]</a></li>")
+                for(var i = 0; i < ret.types.length; i++) {
+                    type = ret.types[i]
+                    if(type == log_type)
+                        types_el.append("<li class='active'><a href='#home' onclick='select_type($(this))'>" + type + "</a></li>");
+                    else
+                        types_el.append("<li><a href='#home' onclick='select_type($(this))'>" + type + "</a></li>");
                 }
-                if(i == 0)
-                    hook_el.append("<li>No items</li>")
+
                 var s = ""
                 logs_el = $('#logs')
                 logs_el.html('')
@@ -65,6 +92,8 @@
                     else
                         s += s1 + "<br>"
                 }
+                if(ret.logs.length == 0)
+                    s = "No items"
                 logs_el.html(s);
                 //resize()
 
@@ -72,9 +101,9 @@
         }
         //
         $(function() {
-            //get()
+            get()
             resize()
-            window.setInterval(get, 3000);
+            window.setInterval(get, 5000);
         })
         $(window).resize(function() {
             resize()
@@ -94,9 +123,9 @@
                     <div class="col-md-3 col-xs-3" style="height: 100%;" id="left">
                         <div class="my-title">
                             <span class="glyphicon glyphicon-tasks my-icon"></span>
-                            Hook
+                            Categories
                         </div>
-                        <ul class="nav nav-tabs nav-stacked" id="hook" style="overflow-y: auto">
+                        <ul class="nav nav-pills nav-stacked" id="types" style="overflow-y: auto">
                         </ul>
                     </div>
                     <div class="col-md-9 col-xs-9 no_padding" style="height:100%" id="right">

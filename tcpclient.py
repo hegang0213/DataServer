@@ -9,7 +9,7 @@ EOF = b'[END]'
 
 class TcpClient(object):
     @staticmethod
-    def instance(host, port):
+    def instance(host=None, port=None):
         if not hasattr(TcpClient, "_instance"):
             TcpClient._instance = TcpClient(host, port)
         return TcpClient._instance
@@ -36,8 +36,14 @@ class TcpClient(object):
         else:
             print('stream closed')
 
-    def close(self):
+    def closed(self):
+        if self.stream is None:
+            return True
         return self.stream.closed()
+
+    def close(self):
+        if self.stream is not None:
+            self.stream.close()
 
     def on_close(self):
         gen.sleep(2)

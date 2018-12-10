@@ -39,13 +39,20 @@
             $('iframe').attr('src', url);
             return false;
         }
-        $(window).resize(function() {
+        function resize() {
             var w = $(window).height()
             var t = $('.my-top-row').height()
             var f = $('.my-footer').height()
             $('.my-body').height(w - t - f - 10)
+        }
+        $(window).resize(function() {
+            resize()
             // -10 is my-footer's margin top + bottom
-        });
+        })
+        $(function() {
+            resize()
+        })
+
     </script>
 </head>
 <body>

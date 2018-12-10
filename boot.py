@@ -1,8 +1,9 @@
 import tornado.web
 import tornado.ioloop
-from tornado import gen
+from tornado import gen,stack_context
 import tornado.httpserver
 from iobase.data import IOStream
+import iobase.mongo
 import model.data
 from model.data import Data
 from log import Log
@@ -10,6 +11,8 @@ import time
 import json
 import config
 import modbus
+import tcpclient
+import functools
 
 
 class MainHandler(tornado.web.RequestHandler):
@@ -43,9 +46,14 @@ class StreamHandler(tornado.web.RequestHandler):
         self.render("root/stream.html")
 
     def post(self):
+        logs = None
+        if self.get_body_argument("type") == "":
+            logs = IOStream.instance().logs()
+        else:
+            logs = IOStream.instance().logs_t(self.get_body_argument("type"))
         result = {
-            "hooks": IOStream.instance().hook.get_hooks(),
-            "logs": IOStream.instance().logs()
+            "types": list(IOStream.instance().types),
+            "logs": logs
         }
         self.write(json.dumps(result))
 
@@ -81,18 +89,38 @@ app = tornado.web.Application([
 
 import testing.tcp_server
 
+
 if __name__ == "__main__":
     conf = config.Configure.instance()
 
+    # tcp server start
     tcp_server = testing.tcp_server.MyServer()
     tcp_server.listen(address="127.0.0.1", port=10601)
-    # tcp_server.start()
 
+    # init tcp client
+    tcpclient.TcpClient.instance(conf.tcpclient.host, conf.tcpclient.port)
+
+    # init mongodb
+    iobase.mongo.MongoConnection.instance(conf.mongodb.host, conf.mongodb.port)
+
+    # init modbus master
     modbus.ModbusMaster.instance(conf.modbus_tcp_master.host, conf.modbus_tcp_master.port)
+
+    # init web server
     server = tornado.httpserver.HTTPServer(app)
     server.listen(conf.main.web)
+
+    # read
     tornado.ioloop.PeriodicCallback(IOStream.instance().read, conf.loop_interval.read).start()
-    tornado.ioloop.PeriodicCallback(IOStream.instance().upload, conf.loop_interval.upload).start()
+    # upload
+    upload_func = functools.partial(IOStream.instance().upload)
+    tornado.ioloop.PeriodicCallback(upload_func, conf.loop_interval.upload).start()
+    # conf.loop_interval.upload).start()
+    # delete
+    delete_func = functools.partial(IOStream.instance().delete_history, conf.loop_interval.delete_days_before)
+    tornado.ioloop.PeriodicCallback(delete_func, conf.loop_interval.delete).start()
+
+    # start
     tornado.ioloop.IOLoop.instance().start()
 
 
