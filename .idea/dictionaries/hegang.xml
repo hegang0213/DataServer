@@ -3,6 +3,7 @@
     <words>
       <w>dataserver</w>
       <w>modbus</w>
+      <w>mongo</w>
       <w>tcpclient</w>
       <w>tcpserver</w>
     </words>

@@ -13,6 +13,7 @@ import config
 import modbus
 import tcpclient
 import functools
+from iobase.message import RegisterMessage
 
 
 class MainHandler(tornado.web.RequestHandler):
@@ -99,9 +100,12 @@ if __name__ == "__main__":
 
     # init tcp client
     tcpclient.TcpClient.instance(conf.tcpclient.host, conf.tcpclient.port)
+    tcpclient.TcpClient.instance().set_on_received_callback(iobase.data.IOStream.instance().upload_response)
+    tcpclient.TcpClient.instance().register_info = RegisterMessage(conf.main.sn).encode()
 
     # init mongodb
     iobase.mongo.MongoConnection.instance(conf.mongodb.host, conf.mongodb.port)
+    iobase.mongo.init()
 
     # init modbus master
     modbus.ModbusMaster.instance(conf.modbus_tcp_master.host, conf.modbus_tcp_master.port)

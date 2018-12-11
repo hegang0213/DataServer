@@ -19,6 +19,8 @@ class TcpClient(object):
         self.port = port
         self.socket = None
         self.stream = None
+        self.register_info = ""
+        self.registered = False
         self._on_received_callback = None
 
     @gen.coroutine
@@ -28,6 +30,8 @@ class TcpClient(object):
         yield self.stream.connect((self.host, self.port))
         self.stream.set_close_callback(self.on_close)
         self.stream.read_until(EOF, self.on_received)
+        # send register info
+        self.write(self.register_info)
 
     @gen.coroutine
     def write(self, message):
@@ -46,12 +50,18 @@ class TcpClient(object):
             self.stream.close()
 
     def on_close(self):
+        self.registered = False
         gen.sleep(2)
         self.connect()
 
     def on_received(self, data):
-        if self._on_received_callback is not None:
-            self._on_received_callback(data)
+        try:
+            if self._on_received_callback is not None:
+                self._on_received_callback(data)
+        except Exception as e:
+            print(e)
+        finally:
+            self.stream.read_until(EOF, self.on_received)
 
     def set_on_received_callback(self, callback):
         self._on_received_callback = callback
