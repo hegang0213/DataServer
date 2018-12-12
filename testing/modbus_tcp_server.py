@@ -60,12 +60,12 @@ def main():
                 last_start = t
                 can_write = True
             elif state != last_on_off:
-                if (t - last_start) >= 120:
+                if (t - last_start) >= 60 * 30:
                     last_on_off = state
                     last_start = t
                     can_write = True
             if can_write:
-                print("state:", state)
+                print(time.strftime('%H:%M:%S', time.localtime()), "state:", state)
                 slave.set_values("V", 30, state)
                 if state == 0:
                     slave.set_values("V", 9, f2int(0.0))

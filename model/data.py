@@ -41,7 +41,7 @@ class Data:
         self.on_off = 0
         self.water_level = 0
         self.pressure = 0
-        self.in_flow = 0             # instantanuous flow
+        self.in_flow = 0             # instantaneous flow
         self.ac_flow = 0             # accumulated flow
         self.v1 = 0                  # voltage phase 1
         self.v2 = 0
@@ -86,7 +86,9 @@ class Data:
             diff = now - self.off_begin
 
         if diff <= HIGH_FREQUENCY_INTERVAL:
-            return True                             # need hight frequence record
+            return True                             # need high frequency record
+        self.on_begin = 0
+        self.off_begin = 0
         return False
 
     format = "i?ffffffffffffffi"

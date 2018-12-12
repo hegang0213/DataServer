@@ -52,7 +52,7 @@ class LogBase:
         time_string = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         s = ""
         for arg in args:
-            s += " " + arg
+            s += " " + str(arg)
         self.cache.insert(0, {"type": log_type, "time": time_string, "message": s})
 
     def logs(self):
