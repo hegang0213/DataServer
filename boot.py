@@ -139,14 +139,14 @@ if __name__ == "__main__":
     server.listen(conf.main.web)
 
     # read
-    #tornado.ioloop.PeriodicCallback(IOStream.instance().read, conf.loop_interval.read).start()
+    tornado.ioloop.PeriodicCallback(IOStream.instance().read, conf.loop_interval.read).start()
     # upload
     upload_func = functools.partial(IOStream.instance().upload)
-    #tornado.ioloop.PeriodicCallback(upload_func, conf.loop_interval.upload).start()
+    tornado.ioloop.PeriodicCallback(upload_func, conf.loop_interval.upload).start()
     # conf.loop_interval.upload).start()
     # delete
     delete_func = functools.partial(IOStream.instance().delete_history, conf.loop_interval.delete_days_before)
-    #tornado.ioloop.PeriodicCallback(delete_func, conf.loop_interval.delete).start()
+    tornado.ioloop.PeriodicCallback(delete_func, conf.loop_interval.delete).start()
 
     # start
     tornado.ioloop.IOLoop.instance().start()
