@@ -119,13 +119,14 @@ if __name__ == "__main__":
     conf = config.Configure.instance()
 
     # tcp server start
-    tcp_server = testing.tcp_server.MyServer()
-    tcp_server.listen(address="127.0.0.1", port=10601)
+    # tcp_server = testing.tcp_server.MyServer()
+    # tcp_server.listen(address="127.0.0.1", port=10601)
 
     # init tcp client
     tcpclient.TcpClient.instance(conf.tcpclient.host, conf.tcpclient.port)
     tcpclient.TcpClient.instance().set_on_received_callback(iobase.data.IOStream.instance().upload_response)
     tcpclient.TcpClient.instance().register_info = RegisterMessage(conf.main.sn).encode()
+    tornado.ioloop.IOLoop.instance().run_sync(tcpclient.TcpClient.instance().connect)
 
     # init mongodb
     iobase.mongo.MongoConnection.instance(conf.mongodb.host, conf.mongodb.port)
