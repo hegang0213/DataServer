@@ -18,8 +18,32 @@ from iobase.message import RegisterMessage
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
-        # data = Data.instance()
-        self.render("root/index.html")
+        info = MainHandler.get_info()
+        self.render("root/index.html", info=info)
+
+    def post(self):
+        info = MainHandler.get_info()
+        result = json.dumps(info)
+        self.write(result)
+
+    @staticmethod
+    def get_info():
+        info = {
+            "serial_no": config.Configure.instance().main.sn,
+            "plc": {
+                "state": modbus.ModbusMaster.instance().state,
+                "info": modbus.ModbusMaster.instance().get_info()
+            },
+            "tcpserver": {
+                "state": tcpclient.TcpClient.instance().state,
+                "info": tcpclient.TcpClient.instance().get_info()
+            },
+            "mongodb": {
+                "state": iobase.mongo.data.state,
+                "info": iobase.mongo.data.get_info()
+            }
+        }
+        return info
 
 
 class MonitorHandler(tornado.web.RequestHandler):
@@ -115,14 +139,14 @@ if __name__ == "__main__":
     server.listen(conf.main.web)
 
     # read
-    tornado.ioloop.PeriodicCallback(IOStream.instance().read, conf.loop_interval.read).start()
+    #tornado.ioloop.PeriodicCallback(IOStream.instance().read, conf.loop_interval.read).start()
     # upload
     upload_func = functools.partial(IOStream.instance().upload)
-    tornado.ioloop.PeriodicCallback(upload_func, conf.loop_interval.upload).start()
+    #tornado.ioloop.PeriodicCallback(upload_func, conf.loop_interval.upload).start()
     # conf.loop_interval.upload).start()
     # delete
     delete_func = functools.partial(IOStream.instance().delete_history, conf.loop_interval.delete_days_before)
-    tornado.ioloop.PeriodicCallback(delete_func, conf.loop_interval.delete).start()
+    #tornado.ioloop.PeriodicCallback(delete_func, conf.loop_interval.delete).start()
 
     # start
     tornado.ioloop.IOLoop.instance().start()

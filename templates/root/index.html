@@ -51,8 +51,15 @@
         })
         $(function() {
             resize()
+            window.setInterval(refresh, 3000)
         })
-
+        function refresh() {
+            $.post("/", function(ret) {
+                $('#plc').html(ret.plc.state)
+                $('#mongodb').html(ret.mongodb.state)
+                $('#tcpserver').html(ret.tcpserver.state)
+            }, "json");
+        }
     </script>
 </head>
 <body>
@@ -89,9 +96,10 @@
         </div>
         <div class="my-footer">
             <div class="body">
-                PLC: <span class="my-text-good">Good</span>
-                | Server: <span class="my-text-good">Good</span>
-                | MongoDB: <span class="my-text-good">Good</span>
+                Serial No: <span class="my-text-good" id="serial_no">{{info["serial_no"]}}</span>
+                | PLC: <span class="my-text-good" id="plc">{{info["plc"]["state"]}}</span>
+                | Tcp Server: <span class="my-text-good" id="tcpserver">{{info["tcpserver"]["state"]}}</span>
+                | MongoDB: <span class="my-text-good" id="mongodb">{{info["mongodb"]["state"]}}</span>
             </div>
         </div>
     </div>

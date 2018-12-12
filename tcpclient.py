@@ -22,6 +22,16 @@ class TcpClient(object):
         self.register_info = ""
         self.registered = False
         self._on_received_callback = None
+        self.state = "Idle"
+        self.last_error = ""
+
+    def get_info(self):
+        return """
+            host: %s<br>
+            port: %d<br>
+            state: %s<br>
+            last error: %s<br>
+        """ % (self.host, self.port, self.state, self.last_error)
 
     @gen.coroutine
     def connect(self):
@@ -32,11 +42,13 @@ class TcpClient(object):
         self.stream.read_until(EOF, self.on_received)
         # send register info
         self.write(self.register_info)
+        self.state = "Good"
 
     @gen.coroutine
     def write(self, message):
         if not self.stream.closed():
             yield self.stream.write(message)
+            self.state = "Good"
         else:
             print('stream closed')
 
@@ -51,6 +63,7 @@ class TcpClient(object):
 
     def on_close(self):
         self.registered = False
+        self.state = "Closed"
         gen.sleep(2)
         self.connect()
 

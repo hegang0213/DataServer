@@ -12,6 +12,14 @@ class ModbusMaster:
         self.host = host
         self.port = port
         self.master = modbus_tcp.TcpMaster(host=host, port=port)
+        self.state = "Idle"
+        self.last_error = ""
+
+    def get_info(self):
+        return "host:" + self.host + "<br>" + \
+            "port:" + str(self.port) + "<br>" + \
+            "state:" + self.state + "<br>" + \
+            "last error:" + self.last_error
 
     def read(self):
         # ========== explaination ==============
@@ -27,7 +35,7 @@ class ModbusMaster:
         # H     on_off
         # =======================================
         try:
-            return self.master.execute(slave=1,
+            result = self.master.execute(slave=1,
                                        function_code=3,
                                        starting_address=0,
                                        quantity_of_x=31,
@@ -36,8 +44,12 @@ class ModbusMaster:
                                                    "ffff" +
                                                    "Hfid" +
                                                    "H")
+            self.state = "Good"
+            return result
         # quantity_of_x = 62,
         # data_format = ">fffHHHffffffHfidH")
         except Exception as e:
+            self.state = "Error"
+            self.last_error = str(e)
             print("ModbusMaster.read()", e)
             return None
