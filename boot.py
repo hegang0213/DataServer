@@ -126,6 +126,7 @@ if __name__ == "__main__":
     tcpclient.TcpClient.instance(conf.tcpclient.host, conf.tcpclient.port)
     tcpclient.TcpClient.instance().set_on_received_callback(iobase.data.IOStream.instance().upload_response)
     tcpclient.TcpClient.instance().register_info = RegisterMessage(conf.main.sn).encode()
+    # connect and register to tcp server
     tornado.ioloop.IOLoop.instance().run_sync(tcpclient.TcpClient.instance().connect)
 
     # init mongodb
