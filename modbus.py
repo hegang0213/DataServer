@@ -1,4 +1,5 @@
 import modbus_tk.modbus_tcp as modbus_tcp
+from model.data import DataDefine, DataDefines
 
 
 class ModbusMaster:
@@ -27,23 +28,47 @@ class ModbusMaster:
         #
         # quantity_of_x: num = num * 2 bytes
         #
-        # total 62 bytes, 17 items
-        # fffH  water_level     pressure    in_flow     v1
-        # HHff  v2              v3          c1          c2
-        # ffff  c3              power_con   re_power    power_factor
-        # Hfid  frequency       energy      on_times    ac_flow
-        # H     on_off
+        # total 50 bytes, 25 hold registers, 16 items
+        # ffif  water_level     pressure    ac_flow     in_flow     8/16
+        # HHH   v1              v2          v3                      3/6
+        # fff   c1              c1          c2                      6/12
+        # HHf   power_con       re_power    power_factor            4/8
+        # HfH   frequency       energy      on_off                  4/8
+        #                                                           25/50
         # =======================================
         try:
+            # result = self.master.execute(slave=1,
+            #                            function_code=3,
+            #                            starting_address=0,
+            #                            quantity_of_x=31,
+            #                            data_format=">fffH" +
+            #                                        "HHff" +
+            #                                        "ffff" +
+            #                                        "Hfid" +
+            #                                        "H")
+            data_length = 0
+            data_format = '>'
+            defines = DataDefines.defines
+            for key in defines.keys():
+                item = defines[key]
+                if item.type == DataDefine.FLOAT:
+                    data_length += 2
+                    data_format += 'f'
+                elif item.type == DataDefine.Int:
+                    data_length += 2
+                    data_format += 'i'
+                elif item.type == DataDefine.Long:
+                    data_length += 2
+                    data_format += 'l'
+                else:
+                    data_length += 1
+                    data_format += 'H'
             result = self.master.execute(slave=1,
-                                       function_code=3,
-                                       starting_address=0,
-                                       quantity_of_x=31,
-                                       data_format=">fffH" +
-                                                   "HHff" +
-                                                   "ffff" +
-                                                   "Hfid" +
-                                                   "H")
+                                         function_code=3,
+                                         starting_address=0,
+                                         quantity_of_x=data_length,
+                                         data_format=data_format)
+
             self.state = "Good"
             return result
         # quantity_of_x = 62,

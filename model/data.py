@@ -18,13 +18,52 @@ defines = {
     'water_level': 'f',
     'frequency': 'H',
     'power_con': 'f',
-    # 'reactive_power': 'f',
+    'reactive_power': 'f',
     'power_factor': 'f',
     'energy': 'f',
     'on_off': 'H',
     'on_times': 'i',
     'pressure': 'f'
 }
+
+
+class DataDefine:
+    FLOAT = "f"
+    Int = "i"
+    Short = "H"
+    Long = "l"
+
+    def __init__(self, title, d_type, decision=0):
+        self.title = title
+        self.type = d_type
+        self.decision = decision
+
+
+class DataDefines:
+    defines = collections.OrderedDict()
+
+    def __init__(self):
+        defines['pressure'] = DataDefine('Pressure', DataDefine.FLOAT, 2)
+        defines['water_level'] = DataDefine('WaterLevel', DataDefine.FLOAT, 2)
+        defines['ac_flow'] = DataDefine('Accumulated Flow', DataDefine.Long)
+        defines['in_flow'] = DataDefine('Instantaneous Flow', DataDefine.FLOAT, 2)
+        defines['v1'] = DataDefine('Voltage Phase A', DataDefine.Short)
+        defines['v2'] = DataDefine('Voltage Phase B', DataDefine.Short)
+        defines['v3'] = DataDefine('Voltage Phase C', DataDefine.Short)
+        defines['c1'] = DataDefine('Current Phase A', DataDefine.FLOAT, 1)
+        defines['c2'] = DataDefine('Current Phase B', DataDefine.FLOAT, 1)
+        defines['c3'] = DataDefine('Current Phase C', DataDefine.FLOAT, 1)
+        defines['power_con'] = DataDefine('Power Consumption', DataDefine.Short)
+        defines['reactive_power'] = DataDefine('Reactive Power', DataDefine.Short)
+        defines['power_factor'] = DataDefine('Power Factor', DataDefine.FLOAT, 3)
+        defines['energy'] = DataDefine('Energy', DataDefine.FLOAT, 2)
+        defines['frequency'] = DataDefine('Frequency', DataDefine.Short)
+        defines['on_off'] = DataDefine('OnOff', DataDefine.Short)
+
+    @staticmethod
+    def round(key, v):
+        d = defines[key]
+        return round(v, d.precision)
 
 
 class Data:

@@ -5,7 +5,7 @@ from tornado.concurrent import run_on_executor
 from concurrent.futures import ThreadPoolExecutor
 import modbus
 import log
-from model.data import Data
+from model.data import Data, DataDefines
 from iobase.message import BaseMessage, DataMessage, HeartMessage
 import iobase.mongo
 import iobase.hook
@@ -57,23 +57,22 @@ class IOStream(log.LogBase):
         d = Data.instance()
         if values:
             d.timestamp = t
-            d.water_level = values[0]
-            d.pressure = values[1]
-            d.in_flow = values[2]
-            d.v1 = values[3]
-            d.v2 = values[4]
-            d.v3 = values[5]
-            d.c1 = values[6]
-            d.c2 = values[7]
-            d.c3 = values[8]
-            d.power_con = values[9]
-            d.reactive_power = values[10]
-            d.power_factor = values[11]
-            d.frequency = values[12]
-            d.energy = values[13]
-            # d.on_times = values[14]
-            d.ac_flow = values[15]
-            d.set_on_off(t, values[16])
+            d.pressure = DataDefines.round('pressure', values[0])
+            d.water_level = DataDefines.round('water_level', values[1])
+            d.ac_flow = values[2]
+            d.in_flow = DataDefines.round('in_flow', values[3])
+            d.v1 = values[4]
+            d.v2 = values[5]
+            d.v3 = values[6]
+            d.c1 = DataDefines.round('c1', values[7])
+            d.c2 = DataDefines.round('c2', values[8])
+            d.c3 = DataDefines.round('c3', values[9])
+            d.power_con = values[10]
+            d.reactive_power = values[11]
+            d.power_factor = DataDefines.round('power_factor', values[12])
+            d.frequency = values[13]
+            d.energy = DataDefines.round('energy', values[14])
+            d.set_on_off(t, values[15])
 
         if d.high_frequency_record():    # high speed write into database every second
             if not self._hfr:
