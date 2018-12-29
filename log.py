@@ -64,3 +64,7 @@ class LogBase:
             if c["type"] == log_type:
                 result.append(c)
         return result
+
+    def clear(self):
+        self.cache = []
+        self.types = set()

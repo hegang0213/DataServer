@@ -6,7 +6,7 @@ from concurrent.futures import ThreadPoolExecutor
 import modbus
 import log
 from model.data import Data
-from iobase.message import BaseMessage, DataMessage
+from iobase.message import BaseMessage, DataMessage, HeartMessage
 import iobase.mongo
 import iobase.hook
 import tcpclient
@@ -118,6 +118,24 @@ class IOStream(log.LogBase):
         except Exception as e:
             print(e)
             self.write_t("write", "Write failed.")
+
+    @tornado.gen.coroutine
+    def heart(self):
+        try:
+            self.write_t('heart', 'begin...')
+            client = tcpclient.TcpClient.instance()
+            if client.registered:
+                if client.closed():
+                    yield client.connect()
+                buffer = HeartMessage().encode()
+                yield client.write(buffer)
+                self.write_t('heart', 'write heart to server.')
+            else:
+                self.write_t('heart', 'not register yet')
+        except Exception as e:
+            self.write_t('heart', e)
+        finally:
+            self.write_t('heart', 'end')
 
     @tornado.gen.coroutine
     def upload(self):
@@ -233,6 +251,9 @@ class IOStream(log.LogBase):
                 print("Tcp Server registered.")
                 self.write_t("register", "[upload_response]the client was registered on tcp server")
                 tcpclient.TcpClient.instance().registered = True
+            elif verb == '[HEART]':
+                print("Heart done")
+                self.write_t('heart', 'heart done response from server')
             elif verb == "[DATA]":
                 self.write_t("upload", "verb==[DATA]")
                 uid = arr[1]

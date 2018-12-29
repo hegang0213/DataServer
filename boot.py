@@ -142,6 +142,8 @@ if __name__ == "__main__":
 
     # read
     tornado.ioloop.PeriodicCallback(IOStream.instance().read, conf.loop_interval.read).start()
+    # heart
+    tornado.ioloop.PeriodicCallback(IOStream.instance().heart, 60000).start()
     # upload
     upload_func = functools.partial(IOStream.instance().upload)
     tornado.ioloop.PeriodicCallback(upload_func, conf.loop_interval.upload).start()

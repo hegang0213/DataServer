@@ -1,5 +1,6 @@
 from model.data import defines
 import struct
+import time
 
 
 class BaseMessage(object):
@@ -24,6 +25,18 @@ class RegisterMessage(BaseMessage):
         result = self.verb + BaseMessage.CRLF + \
             self.serial_no + BaseMessage.CRLF + \
             self.eof
+        return result.encode()
+
+
+class HeartMessage(BaseMessage):
+    def __init__(self):
+        BaseMessage.__init__(self)
+        self.verb = '[HEART]'
+        self.timestamp = int(time.time())
+
+    def encode(self):
+        data_format = '%s' + BaseMessage.CRLF + '%d' + BaseMessage.CRLF + '%s'
+        result = data_format % (self.verb, self.timestamp, self.eof)
         return result.encode()
 
 
